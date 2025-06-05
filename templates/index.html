@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Cadastro de Imagem</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <style>
+        #preview {
+            max-width: 100%;
+            max-height: 300px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body class="container py-4">
+
+    <h2>Cadastro de Imagem</h2>
+
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+        <div class="alert alert-warning">
+            {{ messages[0] }}
+        </div>
+    {% endif %}
+    {% endwith %}
+
+    <form method="POST" enctype="multipart/form-data">
+        <div class="mb-3">
+            <label>Nome Sânscrito</label>
+            <input type="text" name="nome_sanscrito" class="form-control" maxlength="100" required>
+        </div>
+
+        <div class="mb-3">
+            <label>Nome em Português</label>
+            <input type="text" name="nome_portugues" class="form-control" maxlength="100" required>
+        </div>
+
+        <div class="mb-3">
+            <label>Categoria 1</label>
+            <select name="categoria1" class="form-control" required>
+                <option value="">Selecione</option>
+                <option value="1">Básico</option>
+                <option value="2">Intermediário</option>
+                <option value="3">Avançado</option>
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label>Categoria 2</label>
+            <select name="categoria2" class="form-control" required>
+                <option value="">Selecione</option>
+                <option value="1">Equilíbrio</option>
+                <option value="2">Força</option>
+                <option value="3">Flexibilidade</option>
+                <option value="4">Flexão</option>
+                <option value="5">Extensão</option>
+                <option value="6">Torção</option>
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label>Imagem (máx 1MB - .jpg, .png, .bmp)</label>
+            <input type="file" name="imagem" class="form-control" accept=".jpg,.jpeg,.png,.bmp" required onchange="previewImage(event)">
+            <img id="preview" src="#" alt="Preview" style="display:none;">
+        </div>
+
+        <button type="submit" class="btn btn-primary">Salvar</button>
+    </form>
+
+    
+    {% if imagens %}
+    <hr>
+    <h3 class="mt-5">Imagens Cadastradas</h3>
+
+    <div id="carouselImagens" class="carousel slide" data-bs-ride="carousel" data-bs-interval="5000">
+
+    <div class="carousel-inner">
+
+        {% for img in imagens %}
+        <div class="carousel-item {% if loop.first %}active{% endif %}">
+        <div class="text-center">
+            <img src="{{ url_for('static', filename='uploads/' + img[2]) }}" class="d-block mx-auto" style="max-height: 400px; max-width: 100%;">
+            <div class="mt-2">
+            <strong>{{ img[0] }}</strong><br>
+            <em>{{ img[1] }}</em>
+            </div>
+        </div>
+        </div>
+    {% endfor %}
+
+    </div>
+    <button class="carousel-control-prev" type="button" data-bs-target="#carouselImagens" data-bs-slide="prev">
+      <span class="carousel-control-prev-icon"></span>
+      <span class="visually-hidden">Anterior</span>
+    </button> 
+
+    <button class="carousel-control-next" type="button" data-bs-target="#carouselImagens" data-bs-slide="next">
+      <span class="carousel-control-next-icon"></span>
+      <span class="visually-hidden">Próxima</span>
+    </button>
+    </div>
+    {% endif %}
+
+
+
+    <script>
+        function previewImage(event) {
+            const input = event.target;
+            const file = input.files[0];
+
+            if (file && file.size <= 1024 * 1024) {
+                const reader = new FileReader();
+                reader.onload = function () {
+                    const preview = document.getElementById('preview');
+                    preview.src = reader.result;
+                    preview.style.display = 'block';
+                }
+                reader.readAsDataURL(file);
+            } else {
+                alert("Arquivo muito grande (máx 1MB)");
+                input.value = '';
+                document.getElementById('preview').style.display = 'none';
+            }
+        }
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>
